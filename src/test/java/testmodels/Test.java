@@ -22,6 +22,7 @@ public class Test {
 		points[3]=L4;
 		points[4]=L5;
 		
+		
 		Matrix oLS1 = o.oLS(points,3,false);
 		
 		for(int i = 0;i<oLS1.getRowDimension();i++) {
