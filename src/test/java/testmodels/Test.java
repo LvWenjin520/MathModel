@@ -1,6 +1,6 @@
 package testmodels;
 
-import Jama.Matrix;
+import model.linearregression.ls.LSModel;
 import model.linearregression.ls.OLS;
 
 public class Test {
@@ -23,11 +23,9 @@ public class Test {
 		points[4]=L5;
 		
 		
-		Matrix oLS1 = o.oLS(points,3,false);
-		
-		for(int i = 0;i<oLS1.getRowDimension();i++) {
-			System.out.println(oLS1.get(i, 0));
-		}
+		LSModel oLS = o.oLS(points,3,true);
+		System.out.println(oLS);
+		System.out.println("预测结果为"+oLS.eat(3.2));
 	}
 	
 }

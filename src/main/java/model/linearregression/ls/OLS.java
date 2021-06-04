@@ -9,9 +9,13 @@ import Jama.Matrix;
  */
 public class OLS {
 	
+	private LSModel lsModel;
+	
+	private double variance=0;
+	
 	//直线拟合法
 	//最小二乘法的方法
-	public Matrix oLS(double[][] points) {
+	public LSModel oLS(double[][] points) {
 		int row = points.length;
 		//两列
 		double[][] X = new double[row][2];
@@ -22,8 +26,10 @@ public class OLS {
 			X[i][1] = points[i][0];
 			y[i][0] = points[i][1];
 		}
+		
+		lsModel = new LSModel(1, getSLResult(X,y),true,variance);
 		//获取结果
-		return getSLResult(X,y);
+		return lsModel;
 	}
 	
 	/**
@@ -33,7 +39,7 @@ public class OLS {
 	 * @param constant  是否需要常数项
 	 * @return
 	 */
-	public Matrix oLS(double[][] points,int n,boolean constant) {
+	public LSModel oLS(double[][] points,int n,boolean constant) {
 		if(n<2) {
 			return null;
 		}
@@ -51,7 +57,9 @@ public class OLS {
 				y[i][0] = points[i][1];
 			}
 			//获取结果
-			return getSLResult(X,y);
+			lsModel = new LSModel(n, getSLResult(X,y),true,variance);
+			//获取结果
+			return lsModel;
 		}else {  //不需要常数项
 			//n列
 			double[][] X = new double[row][n];
@@ -64,7 +72,9 @@ public class OLS {
 				y[i][0] = points[i][1];
 			}
 			//获取结果
-			return getSLResult(X,y);
+			lsModel = new LSModel(n, getSLResult(X,y),false,variance);
+			//获取结果
+			return lsModel;
 		}
 	}
 	
@@ -87,8 +97,11 @@ public class OLS {
 		Matrix Xty = transposeX.times(matrixY);
 		//求逆
 		Matrix inverse = XtX.inverse();
-		//第一行是常数项，第二行是一次方程系数
-		return inverse.times(Xty);
+		
+		Matrix result = inverse.times(Xty);
+		
+		Matrix slResult = matrixX.times(result);
+		variance = matrixY.minus(slResult).normF();
+		return result;
 	}
-	
 }
