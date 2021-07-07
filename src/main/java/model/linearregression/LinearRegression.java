@@ -71,6 +71,7 @@ public class LinearRegression {
 		//计算结果减去训练结果，得到结果差
 		Matrix minus = functionResult.minus(new Matrix(resultData));
 		 
+		
 		for(int i = 0;i<inputclu;i++) {
 			//第i个参数的偏微分
 			Matrix times = minus.transpose().times(input);
