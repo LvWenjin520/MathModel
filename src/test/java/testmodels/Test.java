@@ -22,6 +22,7 @@ public class Test {
 		points[3]=L4;
 		points[4]=L5;
 		
+		
 		LSModel oLS = o.oLS(points,3,true);
 		System.out.println(oLS);
 		System.out.println("预测结果为"+oLS.eat(3.2));
