@@ -73,10 +73,10 @@ public class LinearRegression {
 		 
 		
 		for(int i = 0;i<inputclu;i++) {
-			//第i个参数的偏微分
-			Matrix times = minus.transpose().times(input);
+			//梯度
+			Matrix grad = minus.transpose().times(input);
 			double d = coefficientVector.get(0, i);
-			d = d-((step/inputRow)*times.get(0, i));
+			d = d-((step/inputRow)*grad.get(0, i));
 			coefficientVector.set(0, i, d);
 		}
 		return coefficientVector;
