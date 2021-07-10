@@ -81,6 +81,7 @@ public class LinearRegression {
 		}
 		return coefficientVector;
 	}
+	
 	public void test() {
 		while(true) {
 			Matrix linearRegression = linearRegression(0.02);
