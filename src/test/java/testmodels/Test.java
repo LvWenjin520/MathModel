@@ -1,11 +1,19 @@
 package testmodels;
 
+import java.io.IOException;
+
+import datamanager.json.JsonDataManager;
 import model.linearregression.LinearRegression;
 import model.linearregression.ls.LSModel;
 import model.linearregression.ls.OLS;
 
 public class Test {
 	@org.junit.Test
+	public void test03() throws IOException {
+		JsonDataManager.getTrainingDataSet("D:\\MachineLearing\\DataSet\\iris-copy.json");
+	}
+	
+	//@org.junit.Test
 	public void test01() {
 		
 		double[][] featureData = new double[5][1];
