@@ -39,9 +39,6 @@ public class Anns {
 		
 		Matrix a2 = sigmoidFun(z2);
 		
-		
-		
-		
 	}
 
 	
