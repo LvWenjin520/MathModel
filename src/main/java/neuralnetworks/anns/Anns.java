@@ -42,6 +42,7 @@ public class Anns {
 	}
 
 	
+	
 
 	/***
 	 * sigmoid函数，激活函数
