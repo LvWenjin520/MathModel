@@ -10,14 +10,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import Jama.Matrix;
+import model.logisticregression.beans.FlowerBean;
 
 /**
  * json处理类
@@ -57,15 +57,27 @@ public class JsonDataManager {
            JsonElement parse = json.parse(str.toString());
            JsonArray array = parse.getAsJsonArray();
            
-           double[][] feature = new double[array.size()][5];
+           Gson gson = new Gson();
            
+           //特征矩阵
+           double[][] feature = new double[array.size()][5];
+           double[][] flag = new double[array.size()][1];
+           FlowerBean fromJson;
            for(int i=0;i<array.size();i++) {
         	   feature[i][0] = 1;
-        	   JsonElement jsonElement = array.get(i);
-        	   Set<Entry<String, JsonElement>> entrySet = jsonElement.getAsJsonObject().entrySet();
+        	   fromJson = gson.fromJson(array.get(i), FlowerBean.class);
+        	   feature[i][1] = fromJson.getSepalLength();
+        	   feature[i][2] = fromJson.getSepalWidth();
+        	   feature[i][3] = fromJson.getPetalLength();
+        	   feature[i][4] = fromJson.getPetalWidth();
+        	   if(fromJson.getSpecies().equals("setosa")) {
+        		   flag[i][0] = 0;
+        	   }else {
+        		   flag[i][0] = 1;
+        	   }
            }
-           
-           
+           result.put("feature",new Matrix(feature));
+           result.put("flag",new Matrix(flag));
            
        } catch (Exception e) {
            e.printStackTrace();
@@ -84,9 +96,8 @@ public class JsonDataManager {
            } catch (Exception e2) {
                 
            }
-            
        }
-		return null;
+		return result;
 	}
 	
 	

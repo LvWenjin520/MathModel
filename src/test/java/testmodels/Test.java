@@ -1,16 +1,30 @@
 package testmodels;
 
 import java.io.IOException;
+import java.util.Map;
 
+import Jama.Matrix;
 import datamanager.json.JsonDataManager;
 import model.linearregression.LinearRegression;
 import model.linearregression.ls.LSModel;
 import model.linearregression.ls.OLS;
+import model.logisticregression.LogisticRegression;
 
 public class Test {
 	@org.junit.Test
 	public void test03() throws IOException {
-		JsonDataManager.getTrainingDataSet("D:\\MachineLearing\\DataSet\\iris-copy.json");
+		Map<String, Matrix> trainingDataSet = JsonDataManager.getTrainingDataSet("D:\\MachineLearing\\DataSet\\iris-copy.json");
+		LogisticRegression lr = new LogisticRegression();
+		Matrix theta = lr.twoFlagClassification(trainingDataSet.get("feature"), trainingDataSet.get("flag"), 0.002);
+		
+		Map<String, Matrix> testDataSet = JsonDataManager.getTrainingDataSet("D:\\MachineLearing\\DataSet\\iris-test.json");
+		Matrix testData = testDataSet.get("feature");
+		Matrix times = testData.times(theta);
+		for(int i = 0;i<times.getRowDimension();i++) {
+			double exp = 1/(1+Math.exp(0-times.get(i, 0)));
+			times.set(i, 0, exp);
+			System.out.println(times.get(i, 0));
+		}
 	}
 	
 	//@org.junit.Test

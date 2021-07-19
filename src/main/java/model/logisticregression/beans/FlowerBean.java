@@ -5,13 +5,13 @@ public class FlowerBean {
 	private double sepalWidth;
 	private double petalLength;
 	private double petalWidth;
-	private int species;
+	private String species;
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
 		return ""+this.sepalLength+"--"+this.petalWidth;
 	}
-	public FlowerBean(double sepalLength, double sepalWidth, double petalLength, double petalWidth, int species) {
+	public FlowerBean(double sepalLength, double sepalWidth, double petalLength, double petalWidth, String species) {
 		this.sepalLength = sepalLength;
 		this.sepalWidth = sepalWidth;
 		this.petalLength = petalLength;
@@ -42,10 +42,10 @@ public class FlowerBean {
 	public void setPetalWidth(double petalWidth) {
 		this.petalWidth = petalWidth;
 	}
-	public int getSpecies() {
+	public String getSpecies() {
 		return species;
 	}
-	public void setSpecies(int species) {
+	public void setSpecies(String species) {
 		this.species = species;
 	}
 	
