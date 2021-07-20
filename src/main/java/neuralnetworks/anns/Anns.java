@@ -150,6 +150,7 @@ public class Anns {
 	 * sigmoid函数的导数
 	 * @param argument
 	 * @return 导数值
+	 * 
 	 */
 	private Matrix diffSigmoid(Matrix argument) {
 		double[][] array = argument.getArray();
