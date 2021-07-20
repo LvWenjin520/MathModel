@@ -9,12 +9,14 @@ import model.linearregression.LinearRegression;
 import model.linearregression.ls.LSModel;
 import model.linearregression.ls.OLS;
 import model.logisticregression.LogisticRegression;
+import neuralnetworks.option.anns.AnnsOption;
 
 public class Test {
 	
 	@org.junit.Test
 	public void test04() throws IOException {
 		
+		AnnsOption a = new AnnsOption("D:\\image\\1", 1, new int[] {25}, 10, 1, 0.02);
 		/*
 		for(int i = 0;i<random.getRowDimension();i++) {
 			System.out.println();

@@ -34,7 +34,7 @@ public class Anns {
 	 * @param y 结果
 	 * @return
 	 */
-	public Matrix[] forwordPropagation(AnnsOption option,Matrix theta1,Matrix theta2,Matrix y) {
+	public Matrix[] backPropagation(AnnsOption option,Matrix theta1,Matrix theta2,Matrix y) {
 		
 		//第一层输入层
 		Matrix a_1 = new Matrix(option.getNum(),option.getInputUnitNum());
@@ -55,15 +55,45 @@ public class Anns {
 		Matrix a3 = sigmoidFun(z3);
 		
 		//第三层的偏差
-		Matrix delta3 = a3.minus(y);
+		Matrix delta_3 = a3.minus(y);
 		
 		//第二层偏差,带偏置的
-		Matrix delta_2 = delta3.times(theta2);
-				
-		delta_2.getMatrix(0, delta_2.getRowDimension(), 1,delta_2.getColumnDimension());	
+		Matrix delta_2 = (delta_3.times(theta2)).arrayTimes(diffSigmoid(z2));
+		
+		//去掉偏置的偏差
+		delta_2 = moveBias(delta_2);	
+		
+		//第一层的所有的系数的偏差
+		Matrix delta1 = (delta_2.transpose()).times(a1);
+		
+		//第二层的所有系数的偏差
+		Matrix delta2 = (delta_3.transpose()).times(a2);
+		
+		//第一层的系数梯度,加上正则项
+		Matrix gradTheta_1 = (delta1.times(1/option.getNum()))
+				.plus(
+						theta1.times(
+								option.getLambda()/option.getNum()
+								)
+						);
+		
+		//第一层的系数梯度
+		Matrix gradTheta_2 = (delta2.times(1/option.getNum()))
+				.plus(
+						theta2.times(
+								option.getLambda()/option.getNum()
+								)
+						);
 		
 		
-		return null;
+		Matrix gradTheta1 = noRegularBias(gradTheta_1,delta1,theta1,option.getNum(),option.getLambda());
+		Matrix gradTheta2 = noRegularBias(gradTheta_2,delta2,theta2,option.getNum(),option.getLambda());
+		
+		Matrix[] result = new Matrix[2];
+		
+		result[0] = gradTheta1;
+		result[1] = gradTheta2;
+		return result;
 	}
 	
 	
@@ -83,8 +113,21 @@ public class Anns {
 		}
 		return new Matrix(result);
 	}
-
 	
+	/**
+	 * 去掉最左列偏置列
+	 * @param argument
+	 * @return
+	 */
+	private Matrix moveBias(Matrix argument) {
+		double[][] result = new double[argument.getRowDimension()][argument.getColumnDimension()-1];
+		for(int i = 0;i<result.length;i++) {
+			for(int j = 0;j<result[0].length;j++) {
+				result[i][j] = argument.get(i, j+1);
+			}
+		}
+		return new Matrix(result);
+	}
 	
 	
 	/***
@@ -97,19 +140,13 @@ public class Anns {
 		Matrix result = new Matrix(argument.getRowDimension(), argument.getColumnDimension());
 		for(int i = 0;i<argument.getRowDimension();i++) {
 			for(int j = 0;j<argument.getColumnDimension();j++) {
-				result.set(i, j, 1/(1+Math.exp(array[i][j])));
+				result.set(i, j, 1/(1+Math.exp(0-array[i][j])));
 			}
 		}
 		return result;
 	}
 	
-	
-	
-	
-	
-	
-	
-	/**  修改
+	/**  
 	 * sigmoid函数的导数
 	 * @param argument
 	 * @return 导数值
@@ -118,15 +155,28 @@ public class Anns {
 		double[][] array = argument.getArray();
 		Matrix result = new Matrix(argument.getRowDimension(), argument.getColumnDimension());
 		double ele = 0;
+		double sigmodEle = 0;
+		
 		for(int i = 0;i<argument.getRowDimension();i++) {
 			for(int j = 0;j<argument.getColumnDimension();j++) {
 				ele = array[i][j];
-				result.set(i, j, ele*(1-ele));
+				sigmodEle = 1/(1+Math.exp(0-ele));
+				result.set(i, j, sigmodEle*(1-sigmodEle));
 			}
 		}
 		return result;
 	}
 	
+	/**
+	 * 去除偏置的正则化
+	 * @return
+	 */
+	public Matrix noRegularBias(Matrix grad,Matrix delta,Matrix theta,int num,double lambda) {
+		for(int i = 0;i<grad.getRowDimension();i++) {
+			grad.set(i, 0,delta.get(i, 0)-((lambda/num)*theta.get(i, 0)));
+		}
+		return grad;
+	}
 	
 	
 	
