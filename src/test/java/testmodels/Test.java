@@ -1,13 +1,18 @@
 package testmodels;
 
+import java.io.IOException;
+import java.util.Map;
+
 import Jama.Matrix;
+import datamanager.json.JsonDataManager;
+import model.linearregression.LinearRegression;
 import model.linearregression.ls.LSModel;
 import model.linearregression.ls.OLS;
 import model.logisticregression.LogisticRegression;
 
 public class Test {
 	@org.junit.Test
-	public void test01() {
+	public void test02() {
 		
 		double[][] d = new double[3][1];
 		d[0][0] = 1;
@@ -21,8 +26,43 @@ public class Test {
 		System.out.println(a.get(0,0));
 		System.out.println(a.get(1,0));
 		System.out.println(a.get(2,0));
+	}
 		
 	
+	public void test03() throws IOException {
+		Map<String, Matrix> trainingDataSet = JsonDataManager.getTrainingDataSet("D:\\MachineLearing\\DataSet\\iris-copy.json");
+		LogisticRegression lr = new LogisticRegression();
+		Matrix theta = lr.twoFlagClassification(trainingDataSet.get("feature"), trainingDataSet.get("flag"), 0.002);
+		
+		Map<String, Matrix> testDataSet = JsonDataManager.getTrainingDataSet("D:\\MachineLearing\\DataSet\\iris-test.json");
+		Matrix testData = testDataSet.get("feature");
+		Matrix times = testData.times(theta);
+		for(int i = 0;i<times.getRowDimension();i++) {
+			double exp = 1/(1+Math.exp(0-times.get(i, 0)));
+			times.set(i, 0, exp);
+			System.out.println(times.get(i, 0));
+		}
+	}
+	
+	//@org.junit.Test
+	public void test01() {
+		
+		double[][] featureData = new double[5][1];
+		double[][] resultData = new double[5][1];
+		
+		featureData[0][0] = 1.0;
+		featureData[1][0] = 2.0;
+		featureData[2][0] = 3.0;
+		featureData[3][0] = 4.0;
+		featureData[4][0] = 5.0;
+		resultData[0][0] = 1.8;
+		resultData[1][0] = 2.7;
+		resultData[2][0] = 3.4;
+		resultData[3][0] = 3.8;
+		resultData[4][0] = 3.9;
+		
+		LinearRegression l = new LinearRegression(featureData, resultData);
+		l.test();
 	}
 	
 	//@org.junit.Test
