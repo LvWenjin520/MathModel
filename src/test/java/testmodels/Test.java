@@ -11,7 +11,29 @@ import model.linearregression.ls.OLS;
 import model.logisticregression.LogisticRegression;
 
 public class Test {
+	
 	@org.junit.Test
+	public void test04() throws IOException {
+		
+		/*
+		for(int i = 0;i<random.getRowDimension();i++) {
+			System.out.println();
+			for(int j = 0;j<random.getColumnDimension();j++) {
+				System.out.print(random.get(i, j)+"  ");
+			}
+		}
+		Anns a = new Anns(null);
+		Matrix bias = a.addBias(random);
+		for(int i = 0;i<bias.getRowDimension();i++) {
+			System.out.println();
+			for(int j = 0;j<bias.getColumnDimension();j++) {
+				System.out.print(bias.get(i, j)+"  ");
+			}
+		}*/
+	}
+	
+	
+	//@org.junit.Test
 	public void test02() {
 		
 		double[][] d = new double[3][1];

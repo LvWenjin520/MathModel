@@ -10,7 +10,7 @@ import neuralnetworks.option.anns.AnnsOption;
  */
 public class Anns {
 	
-	
+	//配置项
 	private AnnsOption option;
 	
 	public AnnsOption getOption() {
@@ -26,24 +26,67 @@ public class Anns {
 	}
 	
 	
-	
-	
-	//前向传播
-	private void forwordPropagation() {
+	/***
+	 * 反向传播
+	 * @param option  配置项
+	 * @param theta1      第一层            26行
+	 * @param theta2      第二层	  10行
+	 * @param y 结果
+	 * @return
+	 */
+	public Matrix[] forwordPropagation(AnnsOption option,Matrix theta1,Matrix theta2,Matrix y) {
 		
-		Matrix a1 = new Matrix(5000,401);
-		Matrix theta1 = new Matrix(25,401);
+		//第一层输入层
+		Matrix a_1 = new Matrix(option.getNum(),option.getInputUnitNum());
+		
+		//5000*401
+		Matrix a1 = addBias(a_1);
 		
 		//5000*25
 		Matrix z2 = a1.times(theta1.transpose());
 		
-		Matrix a2 = sigmoidFun(z2);
+		//5000*26,第二层,加入了偏置列
+		Matrix a2 = addBias(sigmoidFun(z2));
 		
+		//第三层z 5000*10
+		Matrix z3 = a2.times(theta2.transpose());
+		
+		//第三层，不需要偏置  5000*10
+		Matrix a3 = sigmoidFun(z3);
+		
+		//第三层的偏差
+		Matrix delta3 = a3.minus(y);
+		
+		//第二层偏差,带偏置的
+		Matrix delta_2 = delta3.times(theta2);
+				
+		delta_2.getMatrix(0, delta_2.getRowDimension(), 1,delta_2.getColumnDimension());	
+		
+		
+		return null;
+	}
+	
+	
+	
+	/**
+	 * 添加偏置列
+	 * @param argument
+	 * @return 左边多一列都是1的偏置
+	 */
+	private Matrix addBias(Matrix argument) {
+		double[][] result = new double[argument.getRowDimension()][argument.getColumnDimension()+1];
+		for(int i = 0;i<result.length;i++) {
+			result[i][0] = 1;
+			for(int j = 0;j<result[0].length-1;j++) {
+				result[i][j+1] = argument.get(i, j);
+			}
+		}
+		return new Matrix(result);
 	}
 
 	
 	
-
+	
 	/***
 	 * sigmoid函数，激活函数
 	 * @param argument h(x)的计算结果
@@ -61,6 +104,28 @@ public class Anns {
 	}
 	
 	
+	
+	
+	
+	
+	
+	/**  修改
+	 * sigmoid函数的导数
+	 * @param argument
+	 * @return 导数值
+	 */
+	private Matrix diffSigmoid(Matrix argument) {
+		double[][] array = argument.getArray();
+		Matrix result = new Matrix(argument.getRowDimension(), argument.getColumnDimension());
+		double ele = 0;
+		for(int i = 0;i<argument.getRowDimension();i++) {
+			for(int j = 0;j<argument.getColumnDimension();j++) {
+				ele = array[i][j];
+				result.set(i, j, ele*(1-ele));
+			}
+		}
+		return result;
+	}
 	
 	
 	
