@@ -39,6 +39,7 @@ public class Anns {
 		//第一层输入层
 		Matrix a_1 = new Matrix(option.getNum(),option.getInputUnitNum());
 		
+		
 		//5000*401
 		Matrix a1 = addBias(a_1);
 		
