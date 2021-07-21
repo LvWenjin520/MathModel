@@ -26,6 +26,7 @@ public class Test {
 		
 		AnnsOption a = new AnnsOption("D:\\image\\1", 1, new int[] {25}, 10, 1, 0.02);
 		
+		
 		Anns anns = new Anns(a);
 		
 		Matrix randomMatrix = Utils.randomMatrix(26, 10, 10);
