@@ -23,9 +23,55 @@ public class Anns {
 
 	public Anns(AnnsOption option) {
 		this.option = option;
+		this.z = new Matrix[option.getHiddenlayersNum()+2];
+		
+		//加了偏置的输入层
+		this.z[0] = addBias(option.getA1());
+		
+		this.a = new Matrix[option.getHiddenlayersNum()+2];
+		
+		//加了偏置的输入层
+		this.a[0] = addBias(option.getA1());
+		
+		//每一层的偏差
+		this.d = new Matrix[option.getHiddenlayersNum()+1];
+		
 	}
 	
+	//每层的偏差
+	private Matrix[] d;
 	
+	//中间结果
+	private Matrix[] z;
+	
+	//中间结果,经过sigmod的结果
+	private Matrix[] a;
+	
+	
+	public Matrix[] getD() {
+		return d;
+	}
+
+	public void setD(Matrix[] d) {
+		this.d = d;
+	}
+
+	public Matrix[] getZ() {
+		return z;
+	}
+
+	public void setZ(Matrix[] z) {
+		this.z = z;
+	}
+
+	public Matrix[] getA() {
+		return a;
+	}
+
+	public void setA(Matrix[] a) {
+		this.a = a;
+	}
+
 	/***
 	 * 反向传播
 	 * @param option  配置项
@@ -34,16 +80,41 @@ public class Anns {
 	 * @param y 结果
 	 * @return
 	 */
-	public Matrix[] backPropagation(AnnsOption option,Matrix theta1,Matrix theta2,Matrix y) {
+	public Matrix[] backPropagation(Matrix y) {
 		
-		//第一层输入层
-		Matrix a_1 = new Matrix(option.getNum(),option.getInputUnitNum());
+		Matrix[] thetas = this.option.getThetas();
+		
+		//获取所有的除了第一层的网络，当作中间结果
+		//计算所有的z(假设函数)和a(概率函数)
+		//结果包含第一层输入层
+		for(int i = 0;i<thetas.length;i++) {
+			z[i+1] = this.a[i].times(thetas[i].transpose());
+			if(i == thetas.length-1) {
+				a[i+1] = sigmoidFun(z[i+1]);
+				continue;
+			}
+			a[i+1] = addBias(sigmoidFun(z[i+1]));
+		}
+		
+		//从后往前传递偏差，相对于z的导数，没有第一层的
+		for(int i = d.length-1 ; i>=0 ; i--) {
+			if(i==d.length-1) {
+				d[i] = a[i+1].minus(y);
+				continue;
+			}
+			d[i] = moveBias((d[i+1].times(thetas[i+1]))).arrayTimes(diffSigmoid(z[i+1]));
+		}
+		
+		
+		/*//第一层输入层
+		Matrix a_1 = this.option.getA1();
 		
 		//5000*401
 		Matrix a1 = addBias(a_1);
 		
 		//5000*25
 		Matrix z2 = a1.times(theta1.transpose());
+		//所有的参数
 		
 		//5000*26,第二层,加入了偏置列
 		Matrix a2 = addBias(sigmoidFun(z2));
@@ -92,8 +163,8 @@ public class Anns {
 		Matrix[] result = new Matrix[2];
 		
 		result[0] = gradTheta1;
-		result[1] = gradTheta2;
-		return result;
+		result[1] = gradTheta2;*/
+		return null;
 	}
 	
 	

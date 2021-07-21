@@ -9,15 +9,31 @@ import model.linearregression.LinearRegression;
 import model.linearregression.ls.LSModel;
 import model.linearregression.ls.OLS;
 import model.logisticregression.LogisticRegression;
+import neuralnetworks.anns.Anns;
 import neuralnetworks.option.anns.AnnsOption;
+import neuralnetworks.utils.Utils;
 
 public class Test {
 	
 	@org.junit.Test
 	public void test04() throws IOException {
 		
+		//图片灰度化成功
+		//Utils.imageToGray("D:\\image\\1", "jpeg");
 		
-		AnnsOption a = new AnnsOption("D:\\image\\1", 1, new int[] {25}, 10, 1, 0.02);
+		//Utils.testImageToGray("D:\\image\\1\\2", "jpeg");
+		
+		
+		AnnsOption a = new AnnsOption("D:\\image\\1", 2, new int[] {25,20}, 10, 1, 0.02);
+		
+		Anns anns = new Anns(a);
+		
+		Matrix randomMatrix = Utils.randomMatrix(26, 10, 10);
+		
+		anns.backPropagation(randomMatrix);
+		
+		
+		//System.out.println();
 		/*
 		for(int i = 0;i<random.getRowDimension();i++) {
 			System.out.println();
