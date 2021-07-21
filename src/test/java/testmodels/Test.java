@@ -24,7 +24,7 @@ public class Test {
 		//Utils.testImageToGray("D:\\image\\1\\2", "jpeg");
 		
 		
-		AnnsOption a = new AnnsOption("D:\\image\\1", 2, new int[] {25,20}, 10, 1, 0.02);
+		AnnsOption a = new AnnsOption("D:\\image\\1", 1, new int[] {25}, 10, 1, 0.02);
 		
 		Anns anns = new Anns(a);
 		
