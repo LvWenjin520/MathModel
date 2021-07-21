@@ -1,12 +1,16 @@
 package neuralnetworks.option.anns;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import Jama.Matrix;
+import neuralnetworks.utils.Utils;
 
 /***
  * 人工神经网络的配置项
@@ -199,20 +203,36 @@ public class AnnsOption {
 		
 		//获取输入矩阵
 		this.a1 = createA1(dirName);
-		
-		
+		//创建参数数组
+		this.thetas = createThetas();
 	}
 	
 	/**
 	 * 创建参数数组
 	 * @return
 	 */
-	private Matrix[] createThetas(Matrix a1) {
+	private Matrix[] createThetas() {
+		
+		//有隐含层加一个参数矩阵
+		Matrix[] thetas = new Matrix[this.hiddenlayersNum+1];
+		
+		//随机生成的参数矩阵
+		Matrix theta1 = Utils.randomMatrix(this.hiddenlayerUnitNum[0],this.inputUnitNum+1, 0.12);
+		
+		thetas[0] = theta1;
+		
+		//中间隐含层的参数矩阵
+		for(int i = 1;i<(this.hiddenlayersNum);i++) {
+			thetas[i] = Utils.randomMatrix(this.hiddenlayerUnitNum[i], this.hiddenlayerUnitNum[i-1]+1, 0.12);
+		}
 		
 		
+		//最后一列的参数矩阵
+		Matrix thetaL = Utils.randomMatrix(outputUnitNum, this.hiddenlayerUnitNum[this.hiddenlayersNum-1]+1, 0.12);
 		
+		thetas[this.hiddenlayersNum] = thetaL;
 		
-		return null;
+		return thetas;
 	}
 	
 	
@@ -241,26 +261,54 @@ public class AnnsOption {
 		this.num = listFiles.length;
 		
 		double[][] input = new double[this.num][];
-		int colNum = 0;
-		int rowNum = 0;
+		
+		int width = 0;
+		int height = 0;
+		
+		BufferedImage bufferedImage;
+		
+		//单个样本的特征矩阵
+		List<Double> inputVector;
+		
+		//颜色
+		Color color;
+		
+		//单个样本的数组
+		double[] array;
+		
 		//构造输入样本的矩阵,转为m行n列
 		for(int n = 0;n <listFiles.length;n++) {
-			BufferedImage bufferedImage = ImageIO.read(listFiles[n]);
-			//列数
-			colNum = bufferedImage.getWidth();
-			//行数
-			rowNum = bufferedImage.getHeight();
+			bufferedImage = ImageIO.read(listFiles[n]);
 			
-			//每一行特征值初始化
-			input[n] = new double[colNum*rowNum];
+			//列数
+			width = bufferedImage.getWidth();
+			
+			//行数
+			height = bufferedImage.getHeight();
+			
+			this.inputUnitNum = width*height;
+			
+			//单个样本的特征矩阵
+			inputVector = new ArrayList<>(this.inputUnitNum);
+			
 			//转为1行n列	竖着	
-			for ( int i = 0 ; i < colNum; i++) {
-				for ( int j = 0 ; j < rowNum; j++) {
-					input[n][i*rowNum+j] = bufferedImage.getRGB(i, j);
+			for ( int i = 0 ; i < width; i++) {
+				for ( int j = 0 ; j < height; j++) {
+					color = new Color(bufferedImage.getRGB(i, j));
+					//放入灰度值
+					inputVector.add((double)color.getRed());
 				}
 			}
-		}
+			
+			array = new double[inputVector.size()];
+			
+			for(int i = 0;i<inputVector.size();i++) {
+				array[i] = inputVector.get(i);
+			}
+			
+			input[n] = array;
 		
+		}
 		
 		return new Matrix(input);
 	}

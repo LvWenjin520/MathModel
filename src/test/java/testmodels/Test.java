@@ -16,7 +16,11 @@ public class Test {
 	@org.junit.Test
 	public void test04() throws IOException {
 		
-		AnnsOption a = new AnnsOption("D:\\image\\1", 1, new int[] {25}, 10, 1, 0.02);
+		//Utils.imageToGray("D:\\1", "jpeg");
+		
+		AnnsOption a = new AnnsOption("D:\\1", 1, new int[] {25}, 10, 1, 0.02);
+		
+		System.out.println();
 		/*
 		for(int i = 0;i<random.getRowDimension();i++) {
 			System.out.println();

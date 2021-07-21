@@ -82,7 +82,7 @@ public class Utils {
 			String name = filesList[m].getName();
 			name = name.substring(0,name.indexOf("."));
 			//在原路径下生成灰度图文件
-			File newFile = new File(dirs.getPath()+name+"-gray."+endStr);
+			File newFile = new File(dirs.getPath()+File.separator+File.separator+name+"-gray."+endStr);
 			ImageIO.write(gredImage, endStr , newFile);
 		}
 	}
