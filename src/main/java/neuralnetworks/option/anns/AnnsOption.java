@@ -50,6 +50,23 @@ public class AnnsOption {
 	private Matrix a1;
 	
 	
+	private Matrix[] layers;
+	
+	
+	public Matrix[] getLayers() {
+		return layers;
+	}
+
+
+
+
+	public void setLayers(Matrix[] layers) {
+		this.layers = layers;
+	}
+
+
+
+
 	public Matrix[] getThetas() {
 		return thetas;
 	}
@@ -333,7 +350,6 @@ public class AnnsOption {
 		this.lambda = lambda;
 		this.step = step;
 	}
-	
 	
 	
 	

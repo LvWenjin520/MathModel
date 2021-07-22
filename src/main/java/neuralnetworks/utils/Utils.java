@@ -1,7 +1,9 @@
 package neuralnetworks.utils;
 
 import java.awt.Color;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -33,6 +35,51 @@ public class Utils {
 		}
 		return m1;
 	}
+	
+	
+	/***
+	 * 对目录下的所有图片进行灰度化
+	 * @param dir  图像所在的目录
+	 * @param endStr  文件后缀，文件的类型
+	 * @throws IOException
+	 */
+	public static void testImageToGray(String dir,String endStr) throws IOException {
+		
+		File dirs = new File(dir);
+		if(!dirs.exists()) {
+			System.out.println("文件夹不存在");
+			return;
+		}else if(!dirs.isDirectory()) {
+			System.out.println("不是文件夹");
+			return;
+		}
+		
+		//过滤出所需要的文件
+		File[] filesList = dirs.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				String fileName = name.toLowerCase();
+
+                if (fileName.endsWith("."+endStr)) {
+                    return true;
+                }
+                return false;
+			}
+		});
+		for(int m = 0;m<filesList.length;m++) {
+			BufferedImage gray = new ColorConvertOp(
+					ColorSpace.getInstance(ColorSpace.CS_GRAY), null)
+					.filter(ImageIO.read(filesList[m]), null);
+			String name = filesList[m].getName();
+			name = name.substring(0,name.indexOf("."));
+			//在原路径下生成灰度图文件
+			File newFile = new File(dirs.getPath()+File.separator+File.separator+name+"-gray."+endStr);
+			
+			ImageIO.write(gray, endStr , newFile);
+		}
+			
+	}
+	
 	
 	/***
 	 * 对目录下的所有图片进行灰度化
@@ -78,7 +125,6 @@ public class Utils {
 				    gredImage.setRGB(i, j, newPixel);
 			   }
 			}
-			
 			String name = filesList[m].getName();
 			name = name.substring(0,name.indexOf("."));
 			//在原路径下生成灰度图文件
