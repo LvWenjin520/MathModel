@@ -11,49 +11,35 @@ import model.linearregression.ls.OLS;
 import model.logisticregression.LogisticRegression;
 import neuralnetworks.anns.Anns;
 import neuralnetworks.option.anns.AnnsOption;
-import neuralnetworks.utils.Utils;
 
 public class Test {
 	
 	@org.junit.Test
 	public void test04() throws IOException {
-		
+		System.out.println(1/22);
 		//图片灰度化成功
 		//Utils.imageToGray("D:\\image\\1", "jpeg");
 		
 		//Utils.testImageToGray("D:\\image\\1\\2", "jpeg");
 		
-		
 		//Utils.imageToGray("D:\\1", "jpeg");
-		
 		AnnsOption a = new AnnsOption("D:\\1", 1, new int[] {25}, 10, 1, 0.02);
 		
-		System.out.println();
-		
+		//System.out.println();
 		
 		Anns anns = new Anns(a);
 		
-		Matrix randomMatrix = Utils.randomMatrix(26, 10, 10);
 		
-		anns.backPropagation(randomMatrix);
+		double[][] y = new double[22][10];
 		
-		
-		//System.out.println();
-		/*
-		for(int i = 0;i<random.getRowDimension();i++) {
-			System.out.println();
-			for(int j = 0;j<random.getColumnDimension();j++) {
-				System.out.print(random.get(i, j)+"  ");
-			}
+		for(int i = 0;i<y.length;i++) {
+			y[i][0] = 1;
 		}
-		Anns a = new Anns(null);
-		Matrix bias = a.addBias(random);
-		for(int i = 0;i<bias.getRowDimension();i++) {
-			System.out.println();
-			for(int j = 0;j<bias.getColumnDimension();j++) {
-				System.out.print(bias.get(i, j)+"  ");
-			}
-		}*/
+		
+		//Matrix randomMatrix = Utils.randomMatrix(22, 10, 10);
+		
+		anns.train(new Matrix(y));
+		
 	}
 	
 	

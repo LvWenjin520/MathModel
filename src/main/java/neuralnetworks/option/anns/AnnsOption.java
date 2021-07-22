@@ -208,7 +208,16 @@ public class AnnsOption {
 	
 
 
-
+	/**
+	 * 初始化配置项
+	 * @param dirName  训练集图片存储的位置
+	 * @param hiddenlayersNum  隐含层数量
+	 * @param hiddenlayerUnitNum  隐含层神经单元数量，如2层隐含层 就是 [ L1 Unit Num , L2 Unit Num]
+	 * @param outputUnitNum 输出层的神经单元数量
+	 * @param lambda 正则项系数
+	 * @param step 学习率
+	 * @throws IOException
+	 */
 	public AnnsOption(String dirName,int hiddenlayersNum, int[] hiddenlayerUnitNum, int outputUnitNum, int lambda,
 			double step) throws IOException {
 		this.hiddenlayersNum = hiddenlayersNum;
@@ -265,7 +274,7 @@ public class AnnsOption {
 		File dirs = new File(dirName);
 		
 		if(!dirs.exists()) {
-			System.out.println("文件夹不存在");
+			System.out.println("文件夹不存在!!!");
 			return null;
 		}else if(!dirs.isDirectory()) {
 			System.out.println("不是文件夹");

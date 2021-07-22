@@ -23,11 +23,17 @@ public class Anns {
 
 	public Anns(AnnsOption option) {
 		this.option = option;
+		
+		//初始化权重矩阵
+		this.thetas = this.option.getThetas();
+		
+		//初始化假设函数
 		this.z = new Matrix[option.getHiddenlayersNum()+2];
 		
 		//加了偏置的输入层
 		this.z[0] = addBias(option.getA1());
 		
+		//初始化中间结果
 		this.a = new Matrix[option.getHiddenlayersNum()+2];
 		
 		//加了偏置的输入层
@@ -36,7 +42,14 @@ public class Anns {
 		//每一层的偏差
 		this.d = new Matrix[option.getHiddenlayersNum()+1];
 		
+		//初始化梯度
+		this.gradient = new Matrix[option.getHiddenlayersNum()+1];
+	
+	
 	}
+	
+	//梯度
+	private Matrix[] gradient;
 	
 	//每层的偏差
 	private Matrix[] d;
@@ -47,7 +60,16 @@ public class Anns {
 	//中间结果,经过sigmod的结果
 	private Matrix[] a;
 	
+	private Matrix[] thetas;
 	
+	public Matrix[] getGradient() {
+		return gradient;
+	}
+
+	public void setGradient(Matrix[] gradient) {
+		this.gradient = gradient;
+	}
+
 	public Matrix[] getD() {
 		return d;
 	}
@@ -73,36 +95,59 @@ public class Anns {
 	}
 
 	/***
-	 * 反向传播
+	 * 反向传播训练整个网络
 	 * @param option  配置项
 	 * @param theta1      第一层            26行
 	 * @param theta2      第二层	  10行
 	 * @param y 结果
 	 * @return
 	 */
-	public Matrix[] backPropagation(Matrix y) {
+	public void train(Matrix y) {
 		
-		Matrix[] thetas = this.option.getThetas();
-		
-		//获取所有的除了第一层的网络，当作中间结果
-		//计算所有的z(假设函数)和a(概率函数)
-		//结果包含第一层输入层
-		for(int i = 0;i<thetas.length;i++) {
-			z[i+1] = this.a[i].times(thetas[i].transpose());
-			if(i == thetas.length-1) {
-				a[i+1] = sigmoidFun(z[i+1]);
-				continue;
+		while(true) {
+			//获取所有的除了第一层的网络，当作中间结果
+			//计算所有的z(假设函数)和a(概率函数)
+			//结果包含第一层输入层
+			for(int i = 0;i<thetas.length;i++) {
+				z[i+1] = this.a[i].times(thetas[i].transpose());
+				if(i == thetas.length-1) {
+					a[i+1] = sigmoidFun(z[i+1]);
+					continue;
+				}
+				a[i+1] = addBias(sigmoidFun(z[i+1]));
 			}
-			a[i+1] = addBias(sigmoidFun(z[i+1]));
-		}
-		
-		//从后往前传递偏差，相对于z的导数，没有第一层的
-		for(int i = d.length-1 ; i>=0 ; i--) {
-			if(i==d.length-1) {
-				d[i] = a[i+1].minus(y);
-				continue;
+			
+			
+			
+			
+			//从后往前传递偏差，计算梯度，相对于z的导数，没有第一层的
+			for(int i = d.length-1 ; i>=0 ; i--) {
+				if(i==d.length-1) {
+					d[i] = a[i+1].minus(y);
+					
+					this.gradient[i] = 
+							((d[i].transpose().times(a[i]))
+							.times((double)1/option.getNum()))
+							.plus(thetas[i]
+									.times((double)option.getLambda()/option.getNum()));
+					
+					continue;
+				}
+				d[i] = moveBias((d[i+1].times(thetas[i+1]))).arrayTimes(diffSigmoid(z[i+1]));
+				this.gradient[i] = 
+						((d[i].transpose().times(a[i]))
+						.times((double)1/option.getNum()))
+						.plus(thetas[i]
+								.times((double)option.getLambda()/option.getNum()));
 			}
-			d[i] = moveBias((d[i+1].times(thetas[i+1]))).arrayTimes(diffSigmoid(z[i+1]));
+			
+			//偏置去正则化
+			noRegularBias();
+			//更新权值
+			updateThetas();
+			
+			System.out.println(getCast());
+			
 		}
 		
 		
@@ -165,9 +210,42 @@ public class Anns {
 		
 		result[0] = gradTheta1;
 		result[1] = gradTheta2;*/
-		return null;
 	}
 	
+	/***
+	 * 查看所有的误差，在误差平稳的时候停止训练
+	 * @return
+	 */
+	private double getCast() {
+		
+		double[][] array = d[d.length-1].getArray();
+		double[][] result = new double[1][d.length];
+		
+		
+		for(int i=1;i < array.length;i++) {
+			for(int j = 0;j<array[0].length;j++) {
+				array[0][j] += ((double)1/option.getNum())*array[i][j];
+			}
+		}
+		result[0] = array[0];
+		Matrix m = new Matrix(result);
+		
+		Matrix times = m.times(m.transpose());
+		
+		return times.get(0, 0);
+	}
+	
+	
+	/**
+	 * 更新权值
+	 */
+	private void updateThetas() {
+		for(int i = 0;i<this.thetas.length;i++) {
+			thetas[i] = thetas[i]
+					.minus(this.gradient[i]
+							.times(option.getStep()));
+		}
+	}
 	
 	
 	/**
@@ -212,7 +290,7 @@ public class Anns {
 		Matrix result = new Matrix(argument.getRowDimension(), argument.getColumnDimension());
 		for(int i = 0;i<argument.getRowDimension();i++) {
 			for(int j = 0;j<argument.getColumnDimension();j++) {
-				result.set(i, j, 1/(1+Math.exp(0-array[i][j])));
+				result.set(i, j, (double)1/(1+Math.exp(0-array[i][j])));
 			}
 		}
 		return result;
@@ -233,7 +311,7 @@ public class Anns {
 		for(int i = 0;i<argument.getRowDimension();i++) {
 			for(int j = 0;j<argument.getColumnDimension();j++) {
 				ele = array[i][j];
-				sigmodEle = 1/(1+Math.exp(0-ele));
+				sigmodEle = (double)1/(1+Math.exp(0-ele));
 				result.set(i, j, sigmodEle*(1-sigmodEle));
 			}
 		}
@@ -244,11 +322,16 @@ public class Anns {
 	 * 去除偏置的正则化
 	 * @return
 	 */
-	public Matrix noRegularBias(Matrix grad,Matrix delta,Matrix theta,int num,double lambda) {
-		for(int i = 0;i<grad.getRowDimension();i++) {
-			grad.set(i, 0,delta.get(i, 0)-((lambda/num)*theta.get(i, 0)));
+	private void noRegularBias() {
+		double temp = 0;
+		for(int m = 0;m<this.gradient.length;m++) {
+			
+			for(int i = 0;i<gradient[m].getRowDimension();i++) {
+				temp = gradient[m].get(i, 0);
+				temp -= ((double)option.getLambda()/option.getNum())*temp;
+				gradient[m].set(i, 0, temp);
+			}
 		}
-		return grad;
 	}
 	
 	
