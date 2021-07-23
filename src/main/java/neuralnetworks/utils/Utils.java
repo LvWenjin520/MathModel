@@ -19,6 +19,39 @@ import Jama.Matrix;
  */
 public class Utils {
 	
+	
+	public static Matrix createLabelMatrix(String dir) {
+		
+		File file = new File(dir);
+		
+		
+		File[] listFiles = file.listFiles();
+		
+		double[][] list = new double[listFiles.length][3];
+		
+		
+		for(int i = 0;i<listFiles.length;i++) {
+			String name = listFiles[i].getName();
+			
+			if(name.startsWith("001")) {
+				list[i][0] = 0 ;
+				list[i][1] = 0 ;
+				list[i][2] = 1 ;
+			}else if(name.startsWith("010")) {
+				list[i][0] = 0 ;
+				list[i][1] = 1 ;
+				list[i][2] = 0 ;
+			}else {
+				list[i][0] = 1 ;
+				list[i][1] = 0 ;
+				list[i][2] = 0 ;
+			}
+		}
+		return new Matrix(list);
+	}
+	
+	
+	
 	/***
 	 * 获取随机矩阵
 	 * @param n

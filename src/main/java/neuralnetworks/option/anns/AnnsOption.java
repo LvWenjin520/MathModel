@@ -269,7 +269,7 @@ public class AnnsOption {
 	 * @return 输入矩阵
 	 * @throws IOException
 	 */
-	private Matrix createA1(String dirName) throws IOException {
+	public Matrix createA1(String dirName) throws IOException {
 		
 		File dirs = new File(dirName);
 		

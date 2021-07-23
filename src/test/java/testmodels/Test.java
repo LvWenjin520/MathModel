@@ -11,37 +11,47 @@ import model.linearregression.ls.OLS;
 import model.logisticregression.LogisticRegression;
 import neuralnetworks.anns.Anns;
 import neuralnetworks.option.anns.AnnsOption;
+import neuralnetworks.utils.Utils;
 
 public class Test {
 	
 	@org.junit.Test
 	public void test04() throws IOException {
-		System.out.println(1/22);
 		//图片灰度化成功
 		//Utils.imageToGray("D:\\image\\1", "jpeg");
 		
 		//Utils.testImageToGray("D:\\image\\1\\2", "jpeg");
 		
 		//Utils.imageToGray("D:\\1", "jpeg");
-		AnnsOption a = new AnnsOption("D:\\1", 1, new int[] {25}, 10, 1, 0.02);
+		AnnsOption a = new AnnsOption("D:\\1", 1, new int[] {100}, 3, 2, 0.3);
 		
 		//System.out.println();
 		
 		Anns anns = new Anns(a);
 		
 		
-		double[][] y = new double[22][10];
+		Matrix y = Utils.createLabelMatrix("D:\\1");
 		
-		for(int i = 0;i<y.length;i++) {
-			y[i][0] = 1;
-		}
+		
 		
 		//Matrix randomMatrix = Utils.randomMatrix(22, 10, 10);
 		
-		anns.train(new Matrix(y));
+		anns.train(y);
+		
+		Matrix predict = anns.predict("D:\\2");
+		
+		for(int i = 0;i<predict.getRowDimension();i++) {
+			System.out.println();
+			for(int j = 0;j<predict.getColumnDimension();j++) {
+				System.out.print(predict.get(i, j)+"  ");
+			}
+		}
 		
 	}
-	
+	//@org.junit.Test
+	public void test05() throws IOException {
+		Utils.testImageToGray("D:\\2", "jpeg");
+	}
 	
 	//@org.junit.Test
 	public void test02() {

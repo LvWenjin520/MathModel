@@ -1,5 +1,7 @@
 package neuralnetworks.anns;
 
+import java.io.IOException;
+
 import Jama.Matrix;
 import neuralnetworks.option.anns.AnnsOption;
 
@@ -21,6 +23,9 @@ public class Anns {
 		this.option = option;
 	}
 
+	
+	private double cast = Integer.MAX_VALUE;
+	
 	public Anns(AnnsOption option) {
 		this.option = option;
 		
@@ -95,6 +100,33 @@ public class Anns {
 	}
 
 	/***
+	 * 预测
+	 * @return
+	 * @throws IOException 
+	 */
+	public Matrix predict(String fileName) throws IOException {
+		Matrix createA1 = option.createA1(fileName);
+		
+		a[0] = addBias(createA1);
+		z[0] = addBias(createA1);
+		//计算所有的z(假设函数)和a(概率函数)
+		//结果包含第一层输入层
+		for(int i = 0;i<thetas.length;i++) {
+			z[i+1] = this.a[i].times(thetas[i].transpose());
+			if(i == thetas.length-1) {
+				a[i+1] = sigmoidFun(z[i+1]);
+				continue;
+			}
+			a[i+1] = addBias(sigmoidFun(z[i+1]));
+		}
+		
+		
+		
+		return a[a.length-1];
+	}
+	
+	
+	/***
 	 * 反向传播训练整个网络
 	 * @param option  配置项
 	 * @param theta1      第一层            26行
@@ -103,8 +135,9 @@ public class Anns {
 	 * @return
 	 */
 	public void train(Matrix y) {
-		
-		while(true) {
+		double tempCast = Integer.MAX_VALUE-1;
+		while(cast - tempCast>=1E-7) {
+			
 			//获取所有的除了第一层的网络，当作中间结果
 			//计算所有的z(假设函数)和a(概率函数)
 			//结果包含第一层输入层
@@ -145,8 +178,8 @@ public class Anns {
 			noRegularBias();
 			//更新权值
 			updateThetas();
-			
-			System.out.println(getCast());
+			cast = tempCast;
+			tempCast=getCast();
 			
 		}
 		
@@ -290,7 +323,7 @@ public class Anns {
 		Matrix result = new Matrix(argument.getRowDimension(), argument.getColumnDimension());
 		for(int i = 0;i<argument.getRowDimension();i++) {
 			for(int j = 0;j<argument.getColumnDimension();j++) {
-				result.set(i, j, (double)1/(1+Math.exp(0-array[i][j])));
+				result.set(i, j, (double)1/(double)(1+Math.exp(0-array[i][j])));
 			}
 		}
 		return result;
@@ -312,7 +345,7 @@ public class Anns {
 			for(int j = 0;j<argument.getColumnDimension();j++) {
 				ele = array[i][j];
 				sigmodEle = (double)1/(1+Math.exp(0-ele));
-				result.set(i, j, sigmodEle*(1-sigmodEle));
+				result.set(i, j, (double)(sigmodEle*(double)(1-sigmodEle)));
 			}
 		}
 		return result;
