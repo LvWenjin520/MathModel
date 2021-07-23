@@ -29,7 +29,6 @@ public class Test {
 		
 		Anns anns = new Anns(a);
 		
-		
 		Matrix y = Utils.createLabelMatrix("D:\\1");
 		
 		
